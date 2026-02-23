@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | SSO Client Application URLs
+    |--------------------------------------------------------------------------
+    */
+    'sso' => [
+        'ecommerce_url' => env('ECOMMERCE_APP_URL', 'http://localhost:8001'),
+        'foodpanda_url' => env('FOODPANDA_APP_URL', 'http://localhost:8002'),
+    ],
+
 ];
