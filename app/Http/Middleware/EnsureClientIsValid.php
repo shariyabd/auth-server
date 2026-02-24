@@ -9,11 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureClientIsValid
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
+    
+
     public function handle(Request $request, Closure $next): Response
     {
         $clientId = $request->input('client_id') ?? $request->query('client_id');

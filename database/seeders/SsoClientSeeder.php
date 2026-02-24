@@ -14,12 +14,12 @@ class SsoClientSeeder extends Seeder
     private array $clients = [
         [
             'name' => 'Ecommerce App',
-            'redirect_uris' => ['http://localhost:8001/auth/callback'],
+            'redirect_uris' => ['http://127.0.0.1:8001/auth/callback'],
             'env_prefix' => 'ECOMMERCE',
         ],
         [
             'name' => 'Foodpanda App',
-            'redirect_uris' => ['http://localhost:8002/auth/callback'],
+            'redirect_uris' => ['http://127.0.0.1:8002/auth/callback'],
             'env_prefix' => 'FOODPANDA',
         ],
     ];

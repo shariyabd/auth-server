@@ -1,15 +1,7 @@
 <?php
 
-
 use App\Http\Controllers\Auth\SsoController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
-
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [SsoController::class, 'showLoginForm'])->name('login');

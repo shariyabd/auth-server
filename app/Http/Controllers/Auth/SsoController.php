@@ -34,7 +34,6 @@ class SsoController extends Controller
         ], 401);
     }
 
-
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -60,7 +59,6 @@ class SsoController extends Controller
         return redirect()->intended('/dashboard');
     }
 
-
     public function showLoginForm(Request $request)
     {
         if (Auth::check()) {
@@ -69,7 +67,6 @@ class SsoController extends Controller
 
         return view('auth.login');
     }
-
 
     public function register(Request $request)
     {
@@ -98,7 +95,6 @@ class SsoController extends Controller
         return redirect()->intended('/dashboard');
     }
 
-
     public function showRegistrationForm()
     {
         if (Auth::check()) {
@@ -107,7 +103,6 @@ class SsoController extends Controller
 
         return view('auth.register');
     }
-
 
     public function logout(Request $request)
     {
@@ -122,7 +117,6 @@ class SsoController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-
         $redirectUri = $request->query('redirect_uri');
 
         if ($redirectUri && $this->isAllowedRedirectUri($redirectUri)) {
@@ -131,7 +125,6 @@ class SsoController extends Controller
 
         return redirect('/login');
     }
-
 
     public function apiLogout(Request $request): JsonResponse
     {
@@ -149,7 +142,6 @@ class SsoController extends Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-
     private function revokeAllTokens(User $user): void
     {
         $tokenRepository = app(TokenRepository::class);
@@ -165,7 +157,6 @@ class SsoController extends Controller
             $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($token->id);
         }
     }
-
 
     private function isAllowedRedirectUri(string $uri): bool
     {
@@ -183,7 +174,6 @@ class SsoController extends Controller
         return false;
     }
 
-  
     public function dashboard()
     {
         $user = Auth::user();

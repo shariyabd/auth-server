@@ -1,15 +1,8 @@
 <?php
 
-
 use App\Http\Controllers\Auth\SsoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/user', function (Request $request) {

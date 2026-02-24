@@ -12,7 +12,7 @@ class SsoAutoRedirect
 
     public function handle(Request $request, Closure $next): Response
     {
-        
+
         if ($request->is('oauth/authorize') && Auth::check()) {
             return $next($request);
         }

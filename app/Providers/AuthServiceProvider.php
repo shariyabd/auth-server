@@ -2,25 +2,24 @@
 
 namespace App\Providers;
 
+use App\Http\Responses\AuthorizationViewResponse;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Laravel\Passport\Contracts\AuthorizationViewResponse as AuthorizationViewResponseContract;
 use Laravel\Passport\Passport;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * The model to policy mappings for the application.
-     *
-     * @var array<class-string, class-string>
-     */
+    
+
     protected $policies = [
-        //
+        
     ];
 
-    /**
-     * Register any authentication / authorization services.
-     */
+    
+
     public function boot(): void
     {
+
         $this->registerPolicies();
 
         Passport::tokensExpireIn(now()->addDays(15));
@@ -29,7 +28,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::enableImplicitGrant();
 
-        // Define scopes for SSO
+    
         Passport::tokensCan([
             'user-read' => 'Read user profile information',
             'user-email' => 'Access user email address',
@@ -39,5 +38,15 @@ class AuthServiceProvider extends ServiceProvider
             'user-read',
             'user-email',
         ]);
+    }
+
+    
+
+    public function register(): void
+    {
+        $this->app->singleton(
+            AuthorizationViewResponseContract::class,
+            AuthorizationViewResponse::class
+        );
     }
 }

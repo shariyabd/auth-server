@@ -8,20 +8,17 @@ use Laravel\Passport\Client;
 
 class SsoClientManage extends Command
 {
-    /**
-     * The name and signature of the console command.
-     */
+    
+
     protected $signature = 'sso:clients
         {action=list : Action to perform (list, create, revoke, refresh-secret)}
         {--name= : Client name (for create)}
         {--redirect= : Redirect URI (for create)}
         {--id= : Client ID (for revoke, refresh-secret)}';
 
-    /**
-     * The console command description.
-     */
-    protected $description = 'Manage SSO OAuth2 clients for connected applications';
+    
 
+    protected $description = 'Manage SSO OAuth2 clients for connected applications';
 
     public function handle(): int
     {
@@ -33,7 +30,6 @@ class SsoClientManage extends Command
             default => $this->invalidAction(),
         };
     }
-
 
     private function listClients(): int
     {
@@ -70,7 +66,6 @@ class SsoClientManage extends Command
         return self::SUCCESS;
     }
 
-
     private function createClient(): int
     {
         $name = $this->option('name') ?? $this->ask('Client name');
@@ -106,7 +101,6 @@ class SsoClientManage extends Command
         return self::SUCCESS;
     }
 
-
     private function revokeClient(): int
     {
         $id = $this->option('id') ?? $this->ask('Client ID to revoke');
@@ -135,7 +129,6 @@ class SsoClientManage extends Command
 
         return self::SUCCESS;
     }
-
 
     private function refreshSecret(): int
     {
