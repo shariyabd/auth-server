@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Passport\Bridge\RefreshTokenRepository;
-use Laravel\Passport\TokenRepository;
-
 class SsoController extends Controller
 {
 
@@ -131,12 +128,13 @@ class SsoController extends Controller
         $user = $request->user();
 
         if ($user) {
-
             $token = $user->token();
+            $tokenId = $token->id;
             $token->revoke();
 
-            $refreshTokenRepository = app(RefreshTokenRepository::class);
-            $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($token->id);
+            DB::table('oauth_refresh_tokens')
+                ->where('access_token_id', $tokenId)
+                ->update(['revoked' => true]);
         }
 
         return response()->json(['message' => 'Successfully logged out']);
@@ -144,18 +142,22 @@ class SsoController extends Controller
 
     private function revokeAllTokens(User $user): void
     {
-        $tokenRepository = app(TokenRepository::class);
-        $refreshTokenRepository = app(RefreshTokenRepository::class);
-
-        $tokens = DB::table('oauth_access_tokens')
+        $tokenIds = DB::table('oauth_access_tokens')
             ->where('user_id', $user->id)
             ->where('revoked', false)
-            ->get();
+            ->pluck('id');
 
-        foreach ($tokens as $token) {
-            $tokenRepository->revokeAccessToken($token->id);
-            $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($token->id);
+        if ($tokenIds->isEmpty()) {
+            return;
         }
+
+        DB::table('oauth_access_tokens')
+            ->whereIn('id', $tokenIds)
+            ->update(['revoked' => true]);
+
+        DB::table('oauth_refresh_tokens')
+            ->whereIn('access_token_id', $tokenIds)
+            ->update(['revoked' => true]);
     }
 
     private function isAllowedRedirectUri(string $uri): bool
