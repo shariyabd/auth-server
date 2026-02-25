@@ -2,13 +2,14 @@
 namespace Tests\Feature;
 
 use App\Console\Commands\SsoClientManage;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Str;
 use Laravel\Passport\Client;
 use Tests\TestCase;
 
 class SsoClientManageTest extends TestCase
 {
+    use DatabaseTransactions;
 
     private function createSsoClient(array $overrides = []): Client
     {
@@ -16,8 +17,8 @@ class SsoClientManageTest extends TestCase
         $client->id = $overrides['id'] ?? Str::uuid()->toString();
         $client->name = $overrides['name'] ?? 'Test Client';
         $client->secret = $overrides['secret'] ?? Str::random(40);
-        $client->redirect_uris = $overrides['redirect_uris'] ?? json_encode(['https://example.com/callback']);
-        $client->grant_types = $overrides['grant_types'] ?? json_encode(['authorization_code', 'refresh_token']);
+        $client->redirect_uris = $overrides['redirect_uris'] ?? ['https://example.com/callback'];
+        $client->grant_types = $overrides['grant_types'] ?? ['authorization_code', 'refresh_token'];
         $client->revoked = $overrides['revoked'] ?? false;
         $client->save();
 
@@ -102,7 +103,7 @@ class SsoClientManageTest extends TestCase
         $client = Client::where('name', 'Redirect Test')->first();
 
         $this->assertNotNull($client);
-        $this->assertStringContainsString('https://redirect.test/auth/callback', $client->redirect_uris);
+        $this->assertContains('https://redirect.test/auth/callback', $client->redirect_uris);
     }
 
     public function test_create_stores_correct_grant_types(): void
@@ -116,9 +117,8 @@ class SsoClientManageTest extends TestCase
         $client = Client::where('name', 'Grant Test')->first();
 
         $this->assertNotNull($client);
-        $decoded = json_decode($client->grant_types, true);
-        $this->assertContains('authorization_code', $decoded);
-        $this->assertContains('refresh_token', $decoded);
+        $this->assertContains('authorization_code', $client->grant_types);
+        $this->assertContains('refresh_token', $client->grant_types);
     }
 
     public function test_create_generates_uuid_id(): void
@@ -146,7 +146,9 @@ class SsoClientManageTest extends TestCase
         $client = Client::where('name', 'Secret Test')->first();
 
         $this->assertNotNull($client);
-        $this->assertEquals(40, strlen($client->secret));
+        $this->assertNotEmpty($client->secret);
+        // Passport v13 auto-hashes: DB stores bcrypt hash, not plain text
+        $this->assertStringStartsWith('$2y$', $client->secret);
     }
 
     public function test_create_fails_with_missing_name(): void
@@ -312,7 +314,8 @@ class SsoClientManageTest extends TestCase
 
         $client->refresh();
         $this->assertNotEquals($oldSecret, $client->secret);
-        $this->assertEquals(40, strlen($client->secret));
+        // Passport v13 auto-hashes: DB stores bcrypt hash, not plain text
+        $this->assertStringStartsWith('$2y$', $client->secret);
     }
 
     public function test_refresh_secret_cancelled_by_user(): void

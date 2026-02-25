@@ -36,7 +36,7 @@ class SsoClientSeeder extends Seeder
                     : (string) $existingClient->redirect_uris;
 
                 $this->command->info("Client '{$clientConfig['name']}' already exists (ID: {$existingClient->id}).");
-                $this->command->info("  Secret: {$existingClient->secret}");
+                $this->command->info("  Secret: [hidden – re-create if needed]");
                 $this->command->info("  Redirect URIs: {$redirectUris}");
                 $this->command->newLine();
                 continue;
@@ -48,12 +48,12 @@ class SsoClientSeeder extends Seeder
 
             $this->command->info("Created client: {$client->name}");
             $this->command->info("  Client ID: {$client->id}");
-            $this->command->info("  Client Secret: {$client->secret}");
+            $this->command->info("  Client Secret: {$client->plainSecret}");
             $this->command->info("  Redirect URIs: {$redirectUris}");
             $this->command->newLine();
             $this->command->warn("Add these to your {$clientConfig['env_prefix']} app's .env file:");
             $this->command->line("  SSO_CLIENT_ID={$client->id}");
-            $this->command->line("  SSO_CLIENT_SECRET={$client->secret}");
+            $this->command->line("  SSO_CLIENT_SECRET={$client->plainSecret}");
             $this->command->newLine();
         }
     }

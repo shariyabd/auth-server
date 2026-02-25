@@ -85,16 +85,16 @@ class SsoClientManage extends Command
         $client->id = Str::uuid()->toString();
         $client->name = $name;
         $client->secret = Str::random(40);
-        $client->redirect_uris = json_encode([$redirect]);
-        $client->grant_types = json_encode(['authorization_code', 'refresh_token']);
+        $client->redirect_uris = [$redirect];
+        $client->grant_types = ['authorization_code', 'refresh_token'];
         $client->revoked = false;
         $client->save();
 
         $this->info('SSO Client created successfully!');
         $this->newLine();
         $this->line("  Client ID:     {$client->id}");
-        $this->line("  Client Secret: {$client->secret}");
-        $this->line("  Redirect URIs: {$client->redirect_uris}");
+        $this->line("  Client Secret: {$client->plainSecret}");
+        $this->line("  Redirect URIs: " . implode(', ', $client->redirect_uris));
         $this->newLine();
         $this->warn('Store the Client Secret securely — it cannot be retrieved later.');
 
@@ -151,7 +151,7 @@ class SsoClientManage extends Command
 
         $this->info("Secret refreshed for '{$client->name}'.");
         $this->newLine();
-        $this->line("  New Client Secret: {$client->secret}");
+        $this->line("  New Client Secret: {$client->plainSecret}");
         $this->newLine();
         $this->warn('Update the client app .env file with the new secret.');
 
